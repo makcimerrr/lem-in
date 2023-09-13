@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"package/mypackage"
 )
 
 func main() {
-	mypackage.Checktxt()
+	numberofant := mypackage.Checktxt()
+	fmt.Println(numberofant)
 }

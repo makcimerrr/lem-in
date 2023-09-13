@@ -4,19 +4,26 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 )
 
-func Checktxt() {
+var ant int
 
-	if len(os.Args) == 2 {
-		fichier := os.Args[2]
+func Checktxt() int {
+	//ant := false
+	//start := false
+	//end := false
+
+	if len(os.Args) == 2 { //verif si il y bien 2 arg donc main + l'example sinon message err
+		fichier := os.Args[1]
 		file, err := os.Open(fichier)
 		if err != nil {
 			fmt.Println("cannot open the file !!")
-			return
+			os.Exit(3)
 		}
 		fileScanner := bufio.NewScanner(file)
 		fileScanner.Split(bufio.ScanLines)
+
 		var fileLines []string
 
 		for fileScanner.Scan() {
@@ -25,14 +32,29 @@ func Checktxt() {
 
 		file.Close()
 
-		for _, line := range fileLines {
+		for _, line := range fileLines { // ici verif du txt
 			fmt.Println(line)
+			intfirstline, err := strconv.Atoi(fileLines[0])
+
+			if err != nil {
+				//fmt.Print("impossible de convertir la premiere ligne en int ")
+				os.Exit(3)
+
+			}
+
+			if intfirstline > 0 {
+				//ant = true
+				ant = intfirstline
+			} else {
+				fmt.Println("le nombre de ants doit etre suprieur a 0 ")
+				os.Exit(3)
+
+			}
 		}
 
-		fmt.Println(fileLines)
 	} else {
 		fmt.Println("Besoin d'un fichier txt pour executer le projet !!!")
-		return
+		os.Exit(3)
 	}
-
+	return ant
 }
