@@ -6,6 +6,9 @@ import (
 )
 
 func main() {
-	numberofant := mypackage.Checktxt()
+	numberofant, start, end := mypackage.Checktxt()
 	fmt.Println(numberofant)
+	fmt.Println(start)
+	fmt.Println(end)
+
 }
