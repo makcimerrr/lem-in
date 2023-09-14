@@ -6,9 +6,11 @@ import (
 )
 
 func main() {
-	numberofant, start, end := mypackage.Checktxt()
-	fmt.Println(numberofant)
-	fmt.Println(start)
-	fmt.Println(end)
+	numberofant, start, end, rooms, links := mypackage.Checktxt()
+	fmt.Printf("nombre de ants : %s\n", numberofant)
+	fmt.Printf("début du circuit : %s\n", start)
+	fmt.Printf("fin du circuit : %s\n", end)
+	fmt.Println(rooms)
+	fmt.Println(links)
 
 }
