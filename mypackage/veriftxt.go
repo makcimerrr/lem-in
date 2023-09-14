@@ -15,7 +15,7 @@ var (
 )
 
 func Checktxt() (int, int, int) {
-	if len(os.Args) == 2 {
+	if len(os.Args) == 2 { //verif si il y bien 2 arg donc main + l'example sinon message err
 		fichier := os.Args[1]
 		file, err := os.Open(fichier)
 		if err != nil {
@@ -30,16 +30,17 @@ func Checktxt() (int, int, int) {
 		}
 		file.Close()
 		i := 0
-		for range fileLines {
+		for range fileLines { // ici verif du txt
 			intfirstline, err := strconv.Atoi(fileLines[0])
 			if err != nil {
 				fmt.Print("impossible de convertir la premiere ligne en int ")
 				os.Exit(3)
 			}
 			if intfirstline > 0 {
+				//ant = true
 				ant = intfirstline
 			} else {
-				fmt.Println("le nombre de ants doit être supérieur à 0 ")
+				fmt.Println("le nombre de ants doit etre suprieur a 0 ")
 				os.Exit(3)
 			}
 			if fileLines[i] != fileLines[0] {
@@ -61,11 +62,12 @@ func Checktxt() (int, int, int) {
 					}
 					end = intend
 				}
+			} else {
 			}
 			i++
 		}
 	} else {
-		fmt.Println("Besoin d'un fichier txt pour exécuter le projet !!!")
+		fmt.Println("Besoin d'un fichier txt pour executer le projet !!!")
 		os.Exit(3)
 	}
 	return ant, start, end
