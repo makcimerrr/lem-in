@@ -8,12 +8,14 @@ import (
 	"strings"
 )
 
-var ant string
-var start string
-var end string
-var links []string
-var rooms []string
-var temp []string
+var (
+	ant   string
+	start string
+	end   string
+	links []string
+	rooms []string
+	temp  []string
+)
 
 func Checktxt() (string, string, string, []string, []string) {
 	if len(os.Args) == 2 { //verif si il y bien 2 arg donc main + l'example sinon message err

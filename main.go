@@ -15,11 +15,13 @@ type Room struct {
 
 var roomsMap map[string]Room
 
-var ant string
-var start string
-var end string
-var links []string
-var rooms []string
+var (
+	ant   string
+	start string
+	end   string
+	links []string
+	rooms []string
+)
 
 func main() {
 	ant, start, end, rooms, links = mypackage.Checktxt() // Appel de la fonction pour obtenir les données
