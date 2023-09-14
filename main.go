@@ -24,28 +24,29 @@ var (
 func main() {
 	ant, start, end, rooms, links = mypackage.Checktxt() // Appel de la fonction pour obtenir les données
 
+	// Lire les tunnels et construire la carte des pièces adjacentes
+	buildRoomMap(rooms, links)
+
+	// Trouver et afficher tous les chemins possibles
+	FindAndPrintPaths(start, end)
+}
+
+func buildRoomMap(rooms []string, links []string) {
+
 	roomsMap = make(map[string]Room)
 
-	// Lire les tunnels et construire la carte des pièces adjacentes
+	// Construire la carte des pièces adjacentes
 	for _, link := range links {
 		roomIn, roomOut := parseTunnel(rooms, link)
 		roomsMap[roomIn] = Room{Name: roomIn, Adjacent: append(roomsMap[roomIn].Adjacent, roomOut)}
 		roomsMap[roomOut] = Room{Name: roomOut, Adjacent: append(roomsMap[roomOut].Adjacent, roomIn)}
 	}
-
-	// Trouver tous les chemins possibles de la pièce de départ à la pièce de fin
-	paths := findPaths(start, end, []string{start}, make(map[string]bool))
-
-	// Afficher les chemins trouvés
-	for _, path := range paths {
-		fmt.Println(strings.Join(path, " "))
-	}
 }
 
 func parseTunnel(roomsParam []string, line string) (string, string) {
 	parts := strings.Fields(line)
-	roomNames := strings.Split(parts[0], "-")
-	return roomNames[0], roomNames[1]
+	roomsNames := strings.Split(parts[0], "-")
+	return roomsNames[0], roomsNames[1]
 }
 
 func findPaths(currentRoom, endRoom string, path []string, visited map[string]bool) [][]string {
@@ -68,4 +69,14 @@ func findPaths(currentRoom, endRoom string, path []string, visited map[string]bo
 
 	delete(visited, currentRoom)
 	return paths
+}
+
+func FindAndPrintPaths(start, end string) {
+	// Trouver tous les chemins possibles de la pièce de départ à la pièce de fin
+	paths := findPaths(start, end, []string{start}, make(map[string]bool))
+
+	// Afficher les chemins trouvés
+	for _, path := range paths {
+		fmt.Println(strings.Join(path, " "))
+	}
 }
