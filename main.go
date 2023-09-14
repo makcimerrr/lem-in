@@ -1,9 +1,7 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"package/mypackage"
 	"strings"
 )
@@ -28,67 +26,26 @@ func main() {
 
 	roomsMap = make(map[string]Room)
 
-	file := os.Args[1]
-	ParseFile(file)
-
-	fmt.Println("======ANTS======")
-
-	fmt.Println(ant)
-
-	fmt.Println("======ROOMS======")
-
-	for _, allRooms := range rooms {
-		fmt.Println(allRooms)
+	// Lire les tunnels et construire la carte des pièces adjacentes
+	for _, link := range links {
+		roomIn, roomOut := parseTunnel(rooms, link)
+		roomsMap[roomIn] = Room{Name: roomIn, Adjacent: append(roomsMap[roomIn].Adjacent, roomOut)}
+		roomsMap[roomOut] = Room{Name: roomOut, Adjacent: append(roomsMap[roomOut].Adjacent, roomIn)}
 	}
 
-	fmt.Println("======LINKS======")
-
-	for _, allLinks := range links {
-		fmt.Println(allLinks)
-	}
-
-	fmt.Println("======PATHS======")
-
+	// Trouver tous les chemins possibles de la pièce de départ à la pièce de fin
 	paths := findPaths(start, end, []string{start}, make(map[string]bool))
 
+	// Afficher les chemins trouvés
 	for _, path := range paths {
 		fmt.Println(strings.Join(path, " "))
 	}
 }
 
-func ParseFile(filename string) {
-	file, err := os.Open(filename)
-	if err != nil {
-		fmt.Println("cannot open the file !!")
-		os.Exit(3)
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
-		if strings.HasPrefix(line, "#") {
-			continue // Ignorer les lignes de commentaire
-		}
-		if !strings.Contains(line, "-") {
-			continue // Ignorer les lignes qui ne sont pas des tunnels
-		}
-
-		roomIn, roomOut := parseTunnel(line)
-		roomsMap[roomIn] = Room{Name: roomIn, Adjacent: append(roomsMap[roomIn].Adjacent, roomOut)}
-		roomsMap[roomOut] = Room{Name: roomOut, Adjacent: append(roomsMap[roomOut].Adjacent, roomIn)}
-	}
-
-	if err := scanner.Err(); err != nil {
-		fmt.Println("cannot read the file !!")
-		os.Exit(3)
-	}
-}
-
-func parseTunnel(line string) (string, string) {
+func parseTunnel(roomsParam []string, line string) (string, string) {
 	parts := strings.Fields(line)
-	rooms := strings.Split(parts[0], "-")
-	return rooms[0], rooms[1]
+	roomNames := strings.Split(parts[0], "-")
+	return roomNames[0], roomNames[1]
 }
 
 func findPaths(currentRoom, endRoom string, path []string, visited map[string]bool) [][]string {
