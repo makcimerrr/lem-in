@@ -1,6 +1,6 @@
 package mypackage
 
-func findPaths(roomsMap map[string]Room, currentRoom, endRoom string, path []string, visited map[string]bool) [][]string {
+func FindPaths(roomsMap map[string]Room, currentRoom, endRoom string, path []string, visited map[string]bool) [][]string {
 	if currentRoom == endRoom {
 		// La pièce de fin a été atteinte, ajoute le chemin à la liste des chemins
 		return [][]string{append([]string{}, path...)}
@@ -13,7 +13,7 @@ func findPaths(roomsMap map[string]Room, currentRoom, endRoom string, path []str
 		if !visited[nextRoom] {
 			// Évite les boucles infinies en vérifiant si la pièce n'a pas déjà été visitée
 			newPath := append(path, nextRoom)
-			subPaths := findPaths(roomsMap, nextRoom, endRoom, newPath, visited) // Correction ici
+			subPaths := FindPaths(roomsMap, nextRoom, endRoom, newPath, visited) // Correction ici
 			paths = append(paths, subPaths...)
 		}
 	}
