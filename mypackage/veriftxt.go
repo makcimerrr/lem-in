@@ -8,13 +8,6 @@ import (
 	"strings"
 )
 
-type Room struct {
-	Name     string
-	Adjacent []string
-}
-
-var roomsMap map[string]Room
-
 var (
 	ant   string
 	start string
