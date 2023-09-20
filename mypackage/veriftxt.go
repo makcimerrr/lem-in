@@ -11,6 +11,8 @@ import (
 var ant string
 var start string
 var end string
+var partie2 string
+var partie1 string
 var links []string
 var rooms []string
 var temp []string
@@ -78,15 +80,23 @@ func Checktxt() (string, string, string, []string, []string) {
 					}
 
 					if strings.Contains(fileLines[i], "-") {
-						links = append(links, temp[0])
+
+						parties := strings.Split(temp[0], "-")
+
+						partie1 = parties[0]
+						partie2 = parties[1]
+
+						if partie1 != partie2 {
+							links = append(links, temp[0])
+						} else {
+							fmt.Println(" 2 links sont semblable !!! ")
+							os.Exit(3)
+						}
 
 					}
-
 				}
-
 			}
 		}
-
 	} else {
 		fmt.Println("Besoin d'un fichier txt pour executer le projet !!!")
 		os.Exit(3)
