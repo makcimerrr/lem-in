@@ -45,4 +45,49 @@ func main() {
 
 	// Trouver et afficher les chemins uniques les plus courts
 	mypackage.FindAndPrintUniquePaths(roomsMap, start, end)
+
+	fmt.Println("====== SIMULATION ======")
+	// Vous pouvez appeler sendAnts avec les données appropriées
+	sendAnts(roomsMap, start, end, ants)
+
+}
+
+func sendAnts(roomsMap map[string]mypackage.Room, startRoom, endRoom string, numAnts int) {
+	paths := mypackage.FindUniquePaths(roomsMap, startRoom, endRoom)
+	numPaths := len(paths)
+
+	if numPaths == 0 {
+		fmt.Println("Pas de chemin disponible.")
+		return
+	}
+
+	antPositions := make([]int, numAnts)
+
+	for i := range antPositions {
+		antPositions[i] = 1 // Ignorer la première étape pour chaque fourmi
+	}
+
+	for {
+		for i := 0; i < numAnts; i++ {
+			if antPositions[i] < len(paths[i%numPaths])-1 {
+				fmt.Printf("L%d-%s ", i+1, paths[i%numPaths][antPositions[i]])
+				antPositions[i]++
+			} else {
+				fmt.Printf("L%d-0 ", i+1)
+			}
+		}
+		fmt.Println()
+
+		allReachedEnd := true
+		for i := 0; i < numAnts; i++ {
+			if antPositions[i] < len(paths[i%numPaths])-1 {
+				allReachedEnd = false
+				break
+			}
+		}
+
+		if allReachedEnd {
+			break
+		}
+	}
 }
