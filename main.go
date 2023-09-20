@@ -45,12 +45,4 @@ func main() {
 
 	// Trouver et afficher les chemins uniques les plus courts
 	mypackage.FindAndPrintUniquePaths(roomsMap, start, end)
-
-	fmt.Println("====== SIMULATION DES FOURMIS ======")
-
-	// Trouver les chemins possibles sans utiliser la fonction FindPaths
-	possiblePaths := mypackage.FindUniquePaths(roomsMap, start, end)
-
-	// Simuler le mouvement des fourmis
-	mypackage.SimulateAnts(roomsMap, ants, start, end, possiblePaths)
 }
