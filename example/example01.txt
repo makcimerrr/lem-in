@@ -1,6 +1,6 @@
 10
 ##start
-1 1 6
+start 1 6
 0 4 8
 o 6 8
 n 6 6
@@ -14,21 +14,21 @@ A 5 2
 c 8 1
 k 11 2
 ##end
-9 11 6
-1-t
+end 11 6
+start-t
 n-e
 a-m
 A-c
 0-o
 E-a
-k-9
-1-h
+k-end
+start-h
 o-n
-m-9
+m-end
 t-E
-1-0
+start-0
 h-A
-e-9
+e-end
 c-k
 n-m
 h-n

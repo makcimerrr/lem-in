@@ -62,27 +62,42 @@ func sendAnts(roomsMap map[string]mypackage.Room, startRoom, endRoom string, num
 	}
 
 	antPositions := make([]int, numAnts)
-
-	for i := range antPositions {
-		antPositions[i] = 1 // Ignorer la première étape pour chaque fourmi
-	}
+	antsReachedEnd := make([]bool, numAnts)
 
 	for {
+		allReachedEnd := true
+		usedRooms := make(map[string]bool)
+
+		var antMovements [][]string
+
 		for i := 0; i < numAnts; i++ {
-			if antPositions[i] < len(paths[i%numPaths])-1 {
-				fmt.Printf("L%d-%s ", i+1, paths[i%numPaths][antPositions[i]])
-				antPositions[i]++
-			} else {
-				fmt.Printf("L%d-0 ", i+1)
+			if !antsReachedEnd[i] {
+				if antPositions[i] < len(paths[i%numPaths])-1 {
+					room := paths[i%numPaths][antPositions[i]+1] // Commence à la deuxième pièce
+					if !usedRooms[room] || (room == endRoom && !antsReachedEnd[i]) {
+						antMovements = append(antMovements, []string{fmt.Sprintf("L%d-%s", i+1, room)})
+						antPositions[i]++
+						usedRooms[room] = true
+
+						if room == endRoom {
+							antsReachedEnd[i] = true
+						}
+					}
+				} else {
+					antsReachedEnd[i] = true
+				}
+				allReachedEnd = allReachedEnd && antsReachedEnd[i]
 			}
 		}
-		fmt.Println()
 
-		allReachedEnd := true
-		for i := 0; i < numAnts; i++ {
-			if antPositions[i] < len(paths[i%numPaths])-1 {
-				allReachedEnd = false
-				break
+		if len(antMovements) > 0 {
+			for i := 0; i < len(antMovements[0]); i++ {
+				for j := 0; j < len(antMovements); j++ {
+					if i < len(antMovements[j]) {
+						fmt.Printf("%s ", antMovements[j][i])
+					}
+				}
+				fmt.Println()
 			}
 		}
 

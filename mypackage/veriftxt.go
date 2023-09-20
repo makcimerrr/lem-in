@@ -9,12 +9,14 @@ import (
 )
 
 var (
-	ant   string
-	start string
-	end   string
-	links []string
-	rooms []string
-	temp  []string
+	ant     string
+	start   string
+	end     string
+	links   []string
+	rooms   []string
+	temp    []string
+	partie2 string
+	partie1 string
 )
 
 func Checktxt() (string, string, string, []string, []string) {
@@ -60,7 +62,15 @@ func Checktxt() (string, string, string, []string, []string) {
 						rooms = append(rooms, temp[0])
 					}
 					if strings.Contains(fileLines[i], "-") {
-						links = append(links, temp[0])
+						parties := strings.Split(temp[0], "-")
+						partie1 = parties[0]
+						partie2 = parties[1]
+						if partie1 != partie2 {
+							links = append(links, temp[0])
+						} else {
+							fmt.Println("2 links sont semblable !!! ")
+							os.Exit(3)
+						}
 					}
 				}
 			}

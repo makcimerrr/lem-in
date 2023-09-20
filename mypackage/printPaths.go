@@ -13,5 +13,5 @@ func FindAndPrintPaths(roomsMap map[string]Room, start, end string) [][]string {
 	for _, path := range paths {
 		fmt.Println(strings.Join(path, " "))
 	}
-	return paths
+	return paths //Sort tous les chemins possible de la fourmillière.
 }
