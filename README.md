@@ -40,7 +40,8 @@
 
 ## Example
 
-<img src="https://ibb.co/zFT6q3J">
+<img src="https://image.noelshack.com/fichiers/2023/38/4/1695279350-screenshot-2023-09-21-at-08-48-20.png
+">
 <br>
 <br>
 
