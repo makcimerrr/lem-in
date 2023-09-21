@@ -34,13 +34,13 @@
 <br>
 <h2>How does the code work?</h2>
 
-<p>Then enter the following command in the terminal: <code>go run . </code> After this copy this url and past it in your web browser <code>localhost:8080</code> . </p>
+<p>Then enter the following command in the terminal: <code>go run . example01.txt</code> . </p>
 
 <br>
 
 ## Example
 
-<img src="assets/img/capture01.png">
+<img src="https://ibb.co/zFT6q3J">
 <br>
 <br>
 
