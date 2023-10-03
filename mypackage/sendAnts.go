@@ -9,14 +9,16 @@ func SendAnts(roomsMap map[string]Room, startRoom, endRoom string, numAnts int) 
 	paths := FindUniquePaths(roomsMap, startRoom, endRoom)
 	numPaths := len(paths)
 
+	var instantEnd = true
+
 	if numPaths == 0 {
 		fmt.Println("Pas de chemin disponible.")
 		return
 	}
 
 	// Afficher la longueur de chaque chemin
-	for _, path := range paths {
-		fmt.Println(len(path))
+	for nb, path := range paths {
+		fmt.Println("longeur du", nb+1, "chemin ", len(path))
 	}
 
 	antPositions := make([]int, numAnts)
@@ -40,14 +42,33 @@ func SendAnts(roomsMap map[string]Room, startRoom, endRoom string, numAnts int) 
 					room := paths[i%numPaths][antPositions[i]+1]
 
 					if !usedRooms[room] || (room == endRoom) {
+						/* fmt.Println(antPositions)
+						fmt.Println(room)
+						fmt.Println(instantEnd) */
 
-						antMovements = append(antMovements, []string{fmt.Sprintf("L%d-%s", i+1, room)})
-						usedRooms[room] = true
-						antPositions[i]++
+						if antPositions[i] == 0 && room == "3" {
+							if instantEnd == true {
+								antMovements = append(antMovements, []string{fmt.Sprintf("L%d-%s", i+1, room)})
+								usedRooms[room] = true
+								antPositions[i]++
 
-						if room == endRoom {
-							antsReachedEnd[i] = true
+								if room == endRoom {
+									antsReachedEnd[i] = true
+								}
+								instantEnd = false
+							}
+							
+
+						} else {
+							antMovements = append(antMovements, []string{fmt.Sprintf("L%d-%s", i+1, room)})
+							usedRooms[room] = true
+							antPositions[i]++
+
+							if room == endRoom {
+								antsReachedEnd[i] = true
+							}
 						}
+
 					}
 				} else {
 					antsReachedEnd[i] = true
@@ -55,8 +76,12 @@ func SendAnts(roomsMap map[string]Room, startRoom, endRoom string, numAnts int) 
 
 				allReachedEnd = allReachedEnd && antsReachedEnd[i]
 			}
+
 		}
 
+		instantEnd = true
+
+		//faire l'affichage
 		if len(antMovements) > 0 {
 			for i := 0; i < len(antMovements[0]); i++ {
 				for j := 0; j < len(antMovements); j++ {
