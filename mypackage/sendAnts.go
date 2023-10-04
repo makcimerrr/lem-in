@@ -15,8 +15,8 @@ func SendAnts(roomsMap map[string]Room, startRoom, endRoom string, numAnts int) 
 		return
 	}
 	// Afficher la longueur de chaque chemin
-	for _, path := range paths {
-		fmt.Println(len(path))
+	for nb, path := range paths {
+		fmt.Println("longeur du chemin", nb+1, ":", len(path))
 	}
 
 	antPositions := make([]int, numAnts)
