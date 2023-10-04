@@ -1,16 +1,14 @@
 package mypackage
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"sort"
 )
 
 func SendAnts(roomsMap map[string]Room, startRoom, endRoom string, numAnts int) {
-	paths := FindUniquePaths(roomsMap, startRoom, endRoom)
+	allpaths := FindAndPrintPaths(roomsMap, start, end)
+	paths := FilterAndReturnShortestPaths(allpaths, 3)
 	numPaths := len(paths)
-	var flag bool
 
 	if numPaths == 0 {
 		fmt.Println("Pas de chemin disponible.")
@@ -19,75 +17,52 @@ func SendAnts(roomsMap map[string]Room, startRoom, endRoom string, numAnts int) 
 	// Afficher la longueur de chaque chemin
 	for _, path := range paths {
 		fmt.Println(len(path))
-		flag = true
 	}
 
 	antPositions := make([]int, numAnts)
 	antsReachedEnd := make([]bool, numAnts)
-	if !flag {
-		for {
-			allReachedEnd := true
-			usedRooms := make(map[string]bool)
 
-			var antMovements [][]string
+	tunnelOccupied := make(map[string]bool)
 
-			sort.Slice(paths, func(i, j int) bool {
-				return len(paths[i]) < len(paths[j])
-			})
+	for {
+		allReachedEnd := true
 
-			for i := 0; i < numAnts; i++ {
-				if !antsReachedEnd[i] {
-					if antPositions[i] < len(paths[i%numPaths])-1 {
-						room := paths[i%numPaths][antPositions[i]+1]
-						if !usedRooms[room] || (room == endRoom && !antsReachedEnd[i]) {
-							antMovements = append(antMovements, []string{fmt.Sprintf("L%d-%s", i+1, room)})
-							antPositions[i]++
-							usedRooms[room] = true
+		sort.Slice(paths, func(i, j int) bool {
+			return len(paths[i]) < len(paths[j])
+		})
 
-							if room == endRoom {
-								antsReachedEnd[i] = true
-							}
-						}
-					} else {
-						antsReachedEnd[i] = true
-					}
-					allReachedEnd = allReachedEnd && antsReachedEnd[i]
-				}
-			}
+		for i := 0; i < numAnts; i++ {
+			if !antsReachedEnd[i] {
+				if antPositions[i] < len(paths[i%numPaths])-1 {
+					room := paths[i%numPaths][antPositions[i]+1]
+					tunnel := paths[i%numPaths][antPositions[i]] + "-" + room
 
-			if len(antMovements) > 0 {
-				for i := 0; i < len(antMovements[0]); i++ {
-					for j := 0; j < len(antMovements); j++ {
-						if i < len(antMovements[j]) {
-							fmt.Printf("%s ", antMovements[j][i])
+					if !tunnelOccupied[tunnel] {
+						fmt.Printf("L%d-%s ", i+1, room)
+						antPositions[i]++
+						tunnelOccupied[tunnel] = true
+
+						if room == endRoom {
+							antsReachedEnd[i] = true
 						}
 					}
-					fmt.Println()
+				} else {
+					antsReachedEnd[i] = true
 				}
 			}
-
-			if allReachedEnd {
-				break
-			}
+			allReachedEnd = allReachedEnd && antsReachedEnd[i]
 		}
-	} else {
-		// Chemin du fichier texte
-		filePath := "e.txt"
 
-		// Ouverture du fichier
-		file, err := os.Open(filePath)
-		if err != nil {
-			fmt.Printf("Impossible d'ouvrir le fichier : %v\n", err)
-			return
+		fmt.Println()
+
+		// Vérification pour terminer la boucle
+		if allReachedEnd {
+			break
 		}
-		defer file.Close()
 
-		// Création d'un scanner pour lire le fichier ligne par ligne
-		scanner := bufio.NewScanner(file)
-
-		// Lecture et impression du contenu ligne par ligne
-		for scanner.Scan() {
-			fmt.Println(scanner.Text())
+		// Si tous les tunnels sont occupés, libérer un tunnel
+		for tunnel := range tunnelOccupied {
+			tunnelOccupied[tunnel] = false
 		}
 	}
 }
