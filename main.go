@@ -54,15 +54,16 @@ func main() {
 
 	fmt.Println("====== AVEC TRIS ======")
 
-	sortedpaths := mypackage.FilterAndReturnShortestPaths(paths, 9, count)
+	// Appeler la fonction pour sélectionner les chemins
+	selectedPaths := mypackage.SelectPaths(paths)
 
-	// Afficher les chemins triés
-	for _, path := range sortedpaths {
-		fmt.Println(strings.Join(path, " "))
+	// Afficher les chemins sélectionnés
+	fmt.Println("Chemins sélectionnés :")
+	for _, chemin := range selectedPaths {
+		fmt.Println(chemin)
 	}
 
 	fmt.Println("====== SIMULATION ======")
 	// Vous pouvez appeler sendAnts avec les données appropriées
 	mypackage.SendAnts(roomsMap, start, end, ants)
-
 }

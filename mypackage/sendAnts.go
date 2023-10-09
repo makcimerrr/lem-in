@@ -7,13 +7,8 @@ import (
 
 func SendAnts(roomsMap map[string]Room, startRoom, endRoom string, numAnts int) {
 
-	path := FindAndPrintPaths(roomsMap, start, end)
-
-	// Afficher le nombre de chemins trouvés
-	count := len(path)
-
 	allpaths := FindAndPrintPaths(roomsMap, start, end)
-	paths := FilterAndReturnShortestPaths(allpaths, 9, count)
+	paths := SelectPaths(allpaths)
 	numPaths := len(paths)
 
 	if numPaths == 0 {
