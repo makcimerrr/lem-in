@@ -5,7 +5,7 @@ import (
 	"log"
 	"package/mypackage"
 	"strconv"
-	"sync"
+	"strings"
 )
 
 type Room struct {
@@ -20,8 +20,6 @@ var (
 	links []string
 	rooms []string
 )
-
-var mutexes map[string]*sync.Mutex
 
 func main() {
 	ant, start, end, rooms, links = mypackage.Checktxt() // Appel de la fonction pour obtenir les donnée
@@ -41,16 +39,31 @@ func main() {
 	// Construire la carte des pièces adjacentes
 	roomsMap := mypackage.BuildRoomMap(rooms, links)
 
+	fmt.Println("====== ALL PATHS ======")
 	// Trouver et afficher tous les chemins possibles
-	mypackage.FindAndPrintPaths(roomsMap, start, end)
+	paths := mypackage.FindAndPrintPaths(roomsMap, start, end)
+
+	// Afficher les chemins trouvés
+	count := 0
+	for _, path := range paths {
+		fmt.Println(strings.Join(path, " "))
+		count++
+	}
+
+	fmt.Println(count)
 
 	fmt.Println("====== AVEC TRIS ======")
 
-	// Trouver et afficher les chemins uniques les plus courts
-	mypackage.FindAndPrintUniquePaths(roomsMap, start, end)
+	// Appeler la fonction pour sélectionner les chemins
+	selectedPaths := mypackage.SelectPaths(paths)
+
+	// Afficher les chemins sélectionnés
+	fmt.Println("Chemins sélectionnés :")
+	for _, chemin := range selectedPaths {
+		fmt.Println(chemin)
+	}
 
 	fmt.Println("====== SIMULATION ======")
 	// Vous pouvez appeler sendAnts avec les données appropriées
 	mypackage.SendAnts(roomsMap, start, end, ants)
-
 }
