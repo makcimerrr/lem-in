@@ -6,50 +6,56 @@ import (
 )
 
 func SendAntsOpti(roomsMap map[string]Room, startRoom, endRoom string, numAnts int) {
-	paths := SelectPaths(FindAndPrintPaths(roomsMap, startRoom, endRoom))
+	allpaths := FindAndPrintPaths(roomsMap, start, end)
+	uniquePaths := SelectPaths(allpaths)
+	numPaths := len(uniquePaths)
 
-	if len(paths) == 0 {
+	sort.Slice(uniquePaths, func(i, j int) bool {
+		return len(uniquePaths[i]) > len(uniquePaths[j]) // Triez à l'envers pour obtenir le plus court en dernier
+	})
+
+	if numPaths == 0 {
 		fmt.Println("Pas de chemin disponible.")
 		return
 	}
 
-	antPositions := make([]int, numAnts)
-	occupiedRooms := make([]map[string]bool, numAnts)
-	occupiedTunnels := make(map[string]bool)
+	// Afficher la longueur de chaque chemin
+	for _, path := range uniquePaths {
+		fmt.Println(len(path))
+	}
 
-	for i := range occupiedRooms {
+	antPositions := make([]int, numAnts)
+	antsReachedEnd := make([]bool, numAnts)
+
+	// Utiliser une carte pour suivre les pièces occupées par les fourmis
+	occupiedRooms := make([]map[string]bool, numAnts)
+	for i := 0; i < numAnts; i++ {
 		occupiedRooms[i] = make(map[string]bool)
 	}
 
-	// Indice de la dernière fourmi
-	lastAntIndex := numAnts - 1
+	tunnelOccupied := make(map[string]bool)
 
 	for {
 		allReachedEnd := true
 
-		// Trier les chemins en fonction de leur longueur, en privilégiant le chemin le plus court pour la dernière fourmi
-		sort.Slice(paths, func(i, j int) bool {
-			if j == lastAntIndex {
-				return len(paths[i]) <= len(paths[j])
-			}
-			return len(paths[i]) < len(paths[j])
-		})
-
 		for i := 0; i < numAnts; i++ {
-			if antPositions[i] < len(paths[i%len(paths)])-1 {
-				currentRoom := paths[i%len(paths)][antPositions[i]]
-				nextRoom := paths[i%len(paths)][antPositions[i]+1]
+			if !antsReachedEnd[i] {
+				currentRoom := uniquePaths[i%numPaths][antPositions[i]]
+				nextRoom := uniquePaths[i%numPaths][antPositions[i]+1]
 				tunnel := currentRoom + "-" + nextRoom
 
-				// Vérifier si le tunnel et la pièce sont disponibles
-				if !occupiedTunnels[tunnel] && !occupiedRooms[i][nextRoom] {
+				// Vérifier si le tunnel est disponible
+				if !tunnelOccupied[tunnel] && !occupiedRooms[i][nextRoom] {
 					fmt.Printf("L%d-%s ", i+1, nextRoom)
 					antPositions[i]++
-					occupiedTunnels[tunnel] = true
+					tunnelOccupied[tunnel] = true
 					occupiedRooms[i][nextRoom] = true
-				}
 
-				allReachedEnd = allReachedEnd && antPositions[i] == len(paths[i%len(paths)])-1
+					if nextRoom == endRoom {
+						antsReachedEnd[i] = true
+					}
+				}
+				allReachedEnd = allReachedEnd && antsReachedEnd[i]
 			}
 		}
 
@@ -60,9 +66,9 @@ func SendAntsOpti(roomsMap map[string]Room, startRoom, endRoom string, numAnts i
 			break
 		}
 
-		// Réinitialiser les tunnels occupés à la fin de chaque tour
-		for tunnel := range occupiedTunnels {
-			occupiedTunnels[tunnel] = false
+		// Si tous les tunnels sont occupés, libérer les tunnels
+		for tunnel := range tunnelOccupied {
+			tunnelOccupied[tunnel] = false
 		}
 	}
 }
