@@ -44,13 +44,17 @@ func main() {
 	paths := mypackage.FindAndPrintPaths(roomsMap, start, end)
 
 	// Afficher les chemins trouvés
+	count := 0
 	for _, path := range paths {
 		fmt.Println(strings.Join(path, " "))
+		count++
 	}
+
+	fmt.Println(count)
 
 	fmt.Println("====== AVEC TRIS ======")
 
-	sortedpaths := mypackage.FilterAndReturnShortestPaths(paths, 3)
+	sortedpaths := mypackage.FilterAndReturnShortestPaths(paths, 9, count)
 
 	// Afficher les chemins triés
 	for _, path := range sortedpaths {

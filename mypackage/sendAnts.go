@@ -6,51 +6,64 @@ import (
 )
 
 func SendAnts(roomsMap map[string]Room, startRoom, endRoom string, numAnts int) {
+
+	path := FindAndPrintPaths(roomsMap, start, end)
+
+	// Afficher le nombre de chemins trouvés
+	count := len(path)
+
 	allpaths := FindAndPrintPaths(roomsMap, start, end)
-	paths := FilterAndReturnShortestPaths(allpaths, 3)
+	paths := FilterAndReturnShortestPaths(allpaths, 9, count)
 	numPaths := len(paths)
 
 	if numPaths == 0 {
 		fmt.Println("Pas de chemin disponible.")
 		return
 	}
+
 	// Afficher la longueur de chaque chemin
-	for nb, path := range paths {
-		fmt.Println("longeur du chemin", nb+1, ":", len(path))
+	for _, path := range paths {
+		fmt.Println(len(path))
 	}
 
 	antPositions := make([]int, numAnts)
 	antsReachedEnd := make([]bool, numAnts)
+
+	// Utiliser un tableau pour suivre les pièces occupées par les fourmis
+	occupiedRooms := make([]map[string]bool, numAnts)
+	for i := 0; i < numAnts; i++ {
+		occupiedRooms[i] = make(map[string]bool)
+	}
 
 	tunnelOccupied := make(map[string]bool)
 
 	for {
 		allReachedEnd := true
 
+		// Trier les chemins en fonction de leur longueur
 		sort.Slice(paths, func(i, j int) bool {
 			return len(paths[i]) < len(paths[j])
 		})
 
 		for i := 0; i < numAnts; i++ {
 			if !antsReachedEnd[i] {
-				if antPositions[i] < len(paths[i%numPaths])-1 {
-					room := paths[i%numPaths][antPositions[i]+1]
-					tunnel := paths[i%numPaths][antPositions[i]] + "-" + room
+				currentRoom := paths[i%numPaths][antPositions[i]]
+				nextRoom := paths[i%numPaths][antPositions[i]+1]
+				tunnel := currentRoom + "-" + nextRoom
 
-					if !tunnelOccupied[tunnel] {
-						fmt.Printf("L%d-%s ", i+1, room)
-						antPositions[i]++
-						tunnelOccupied[tunnel] = true
+				// Vérifier si le tunnel est disponible
+				if !tunnelOccupied[tunnel] && !occupiedRooms[i][nextRoom] {
+					fmt.Printf("L%d-%s ", i+1, nextRoom)
+					antPositions[i]++
+					tunnelOccupied[tunnel] = true
+					occupiedRooms[i][nextRoom] = true
 
-						if room == endRoom {
-							antsReachedEnd[i] = true
-						}
+					if nextRoom == endRoom {
+						antsReachedEnd[i] = true
 					}
-				} else {
-					antsReachedEnd[i] = true
 				}
+				allReachedEnd = allReachedEnd && antsReachedEnd[i]
 			}
-			allReachedEnd = allReachedEnd && antsReachedEnd[i]
 		}
 
 		fmt.Println()
@@ -60,7 +73,7 @@ func SendAnts(roomsMap map[string]Room, startRoom, endRoom string, numAnts int) 
 			break
 		}
 
-		// Si tous les tunnels sont occupés, libérer un tunnel
+		// Si tous les tunnels sont occupés, libérer les tunnels
 		for tunnel := range tunnelOccupied {
 			tunnelOccupied[tunnel] = false
 		}

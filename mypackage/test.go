@@ -1,68 +1,53 @@
 package mypackage
 
-import (
-	"sort"
-	"strings"
-)
+import "sort"
 
-func FilterAndReturnShortestPaths(paths [][]string, numPaths int) [][]string {
-	// Triez les chemins par longueur
-	sort.SliceStable(paths, func(i, j int) bool {
-		return len(paths[i]) < len(paths[j])
+func FilterAndReturnShortestPaths(paths [][]string, maxPaths, count int) [][]string {
+	var validPaths [][]string
+
+	// Ajouter le premier chemin
+	validPaths = append(validPaths, paths[0])
+
+	// Parcourir les chemins et sélectionner ceux qui n'ont pas de pièces en commun
+	for i := 1; i < len(paths) && len(validPaths) < maxPaths; i++ {
+		currentPath := paths[i]
+		isUnique := true
+
+		// Vérifier si le chemin a la même longueur que le dernier chemin ajouté
+		if len(currentPath) == len(validPaths[0]) {
+			// Vérifier si les chemins partagent une pièce en commun
+			for _, room := range currentPath {
+				if contain(validPaths[0], room) {
+					isUnique = false
+					break
+				}
+			}
+		}
+
+		if isUnique {
+			validPaths = append(validPaths, currentPath)
+		}
+	}
+
+	// Trier les chemins par longueur
+	sort.Slice(validPaths, func(i, j int) bool {
+		return len(validPaths[i]) < len(validPaths[j])
 	})
 
-	// Filtrer les chemins non-conflictuels
-	var shortestPaths [][]string
-	seenRooms := make(map[string]bool)
-
-	for _, path := range paths {
-		conflict := false
-
-		for _, room := range path[1 : len(path)-1] { // Ignorer la première et la dernière pièce
-			if seenRooms[room] {
-				conflict = true
-				break
-			}
-		}
-
-		if !conflict {
-			shortestPaths = append(shortestPaths, path)
-			for _, room := range path[1 : len(path)-1] { // Marquer les pièces comme vues
-				seenRooms[room] = true
-			}
-		}
-
-		if len(shortestPaths) == numPaths {
-			break
-		}
+	// Afficher soit 2 ou 3 chemins en fonction de count et maxPaths
+	if count >= maxPaths {
+		return validPaths[:3]
 	}
 
-	return shortestPaths
+	return validPaths[:2]
 }
 
-func arePiecesUnique(path1, path2 []string) bool {
-	// Crée une carte pour stocker les pièces utilisées dans le chemin
-	pieceMap := make(map[string]bool)
-
-	// Remplit la carte avec les pièces du chemin 1
-	for _, piece := range path1 {
-		pieceMap[getPieceName(piece)] = true
-	}
-
-	// Vérifie si les pièces du chemin 2 sont déjà utilisées dans le chemin 1
-	for _, piece := range path2 {
-		if pieceMap[getPieceName(piece)] {
-			return false
+// Fonction utilitaire pour vérifier si une slice contient une chaîne donnée
+func contain(slice []string, str string) bool {
+	for _, s := range slice {
+		if s == str {
+			return true
 		}
 	}
-
-	return true
-}
-
-func getPieceName(piece string) string {
-	parts := strings.Split(piece, "-")
-	if len(parts) == 2 {
-		return parts[0]
-	}
-	return ""
+	return false
 }
