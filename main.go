@@ -3,9 +3,10 @@ package main
 import (
 	"fmt"
 	"log"
-	"package/mypackage"
 	"strconv"
 	"strings"
+
+	"package/mypackage"
 )
 
 type Room struct {
@@ -66,4 +67,8 @@ func main() {
 	fmt.Println("====== SIMULATION ======")
 	// Vous pouvez appeler sendAnts avec les données appropriées
 	mypackage.SendAnts(roomsMap, start, end, ants)
+
+	fmt.Println("====== SIMULATION OPTI ======")
+	// Vous pouvez appeler sendAnts avec les données appropriées
+	mypackage.SendAntsOpti(roomsMap, start, end, ants)
 }

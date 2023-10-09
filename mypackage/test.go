@@ -1,53 +1,68 @@
 package mypackage
 
-import "sort"
+import (
+	"fmt"
+	"sort"
+)
 
-func FilterAndReturnShortestPaths(paths [][]string, maxPaths, count int) [][]string {
-	var validPaths [][]string
+func SendAntsOpti(roomsMap map[string]Room, startRoom, endRoom string, numAnts int) {
+	paths := SelectPaths(FindAndPrintPaths(roomsMap, startRoom, endRoom))
 
-	// Ajouter le premier chemin
-	validPaths = append(validPaths, paths[0])
+	if len(paths) == 0 {
+		fmt.Println("Pas de chemin disponible.")
+		return
+	}
 
-	// Parcourir les chemins et sélectionner ceux qui n'ont pas de pièces en commun
-	for i := 1; i < len(paths) && len(validPaths) < maxPaths; i++ {
-		currentPath := paths[i]
-		isUnique := true
+	antPositions := make([]int, numAnts)
+	occupiedRooms := make([]map[string]bool, numAnts)
+	occupiedTunnels := make(map[string]bool)
 
-		// Vérifier si le chemin a la même longueur que le dernier chemin ajouté
-		if len(currentPath) == len(validPaths[0]) {
-			// Vérifier si les chemins partagent une pièce en commun
-			for _, room := range currentPath {
-				if contain(validPaths[0], room) {
-					isUnique = false
-					break
+	for i := range occupiedRooms {
+		occupiedRooms[i] = make(map[string]bool)
+	}
+
+	// Indice de la dernière fourmi
+	lastAntIndex := numAnts - 1
+
+	for {
+		allReachedEnd := true
+
+		// Trier les chemins en fonction de leur longueur, en privilégiant le chemin le plus court pour la dernière fourmi
+		sort.Slice(paths, func(i, j int) bool {
+			if j == lastAntIndex {
+				return len(paths[i]) <= len(paths[j])
+			}
+			return len(paths[i]) < len(paths[j])
+		})
+
+		for i := 0; i < numAnts; i++ {
+			if antPositions[i] < len(paths[i%len(paths)])-1 {
+				currentRoom := paths[i%len(paths)][antPositions[i]]
+				nextRoom := paths[i%len(paths)][antPositions[i]+1]
+				tunnel := currentRoom + "-" + nextRoom
+
+				// Vérifier si le tunnel et la pièce sont disponibles
+				if !occupiedTunnels[tunnel] && !occupiedRooms[i][nextRoom] {
+					fmt.Printf("L%d-%s ", i+1, nextRoom)
+					antPositions[i]++
+					occupiedTunnels[tunnel] = true
+					occupiedRooms[i][nextRoom] = true
 				}
+
+				allReachedEnd = allReachedEnd && antPositions[i] == len(paths[i%len(paths)])-1
 			}
 		}
 
-		if isUnique {
-			validPaths = append(validPaths, currentPath)
+		fmt.Println()
+
+		// Vérification pour terminer la boucle
+		if allReachedEnd {
+			break
+		}
+
+		// Réinitialiser les tunnels occupés à la fin de chaque tour
+		for tunnel := range occupiedTunnels {
+			occupiedTunnels[tunnel] = false
 		}
 	}
-
-	// Trier les chemins par longueur
-	sort.Slice(validPaths, func(i, j int) bool {
-		return len(validPaths[i]) < len(validPaths[j])
-	})
-
-	// Afficher soit 2 ou 3 chemins en fonction de count et maxPaths
-	if count >= maxPaths {
-		return validPaths[:3]
-	}
-
-	return validPaths[:2]
-}
-
-// Fonction utilitaire pour vérifier si une slice contient une chaîne donnée
-func contain(slice []string, str string) bool {
-	for _, s := range slice {
-		if s == str {
-			return true
-		}
-	}
-	return false
 }

@@ -6,7 +6,6 @@ import (
 )
 
 func SendAnts(roomsMap map[string]Room, startRoom, endRoom string, numAnts int) {
-
 	allpaths := FindAndPrintPaths(roomsMap, start, end)
 	paths := SelectPaths(allpaths)
 	numPaths := len(paths)
