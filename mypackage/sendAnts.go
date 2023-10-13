@@ -5,10 +5,15 @@ import (
 	"sort"
 )
 
-func SendAnts(roomsMap map[string]Room, startRoom, endRoom string, numAnts int) {
+func SendAntsOpti(roomsMap map[string]Room, startRoom, endRoom string, numAnts int) {
 	allpaths := FindAndPrintPaths(roomsMap, start, end)
-	paths := SelectPaths(allpaths)
-	numPaths := len(paths)
+	uniquePaths := Filter(allpaths)
+	numPaths := len(uniquePaths)
+
+	// Trier les chemins par longueur croissante pour obtenir le plus court en premier
+	sort.Slice(uniquePaths, func(i, j int) bool {
+		return len(uniquePaths[i]) < len(uniquePaths[j])
+	})
 
 	if numPaths == 0 {
 		fmt.Println("Pas de chemin disponible.")
@@ -16,14 +21,14 @@ func SendAnts(roomsMap map[string]Room, startRoom, endRoom string, numAnts int) 
 	}
 
 	// Afficher la longueur de chaque chemin
-	for _, path := range paths {
+	for _, path := range uniquePaths {
 		fmt.Println(len(path))
 	}
 
 	antPositions := make([]int, numAnts)
 	antsReachedEnd := make([]bool, numAnts)
 
-	// Utiliser un tableau pour suivre les pièces occupées par les fourmis
+	// Utiliser une carte pour suivre les pièces occupées par les fourmis
 	occupiedRooms := make([]map[string]bool, numAnts)
 	for i := 0; i < numAnts; i++ {
 		occupiedRooms[i] = make(map[string]bool)
@@ -31,18 +36,32 @@ func SendAnts(roomsMap map[string]Room, startRoom, endRoom string, numAnts int) 
 
 	tunnelOccupied := make(map[string]bool)
 
+	// Trouver l'index du chemin le plus court
+	shortestPathIndex := 0
+	shortestPathLength := len(uniquePaths[0])
+	for i := 1; i < numPaths; i++ {
+		if len(uniquePaths[i]) < shortestPathLength {
+			shortestPathIndex = i
+			shortestPathLength = len(uniquePaths[i])
+		}
+	}
+
 	for {
 		allReachedEnd := true
 
-		// Trier les chemins en fonction de leur longueur
-		sort.Slice(paths, func(i, j int) bool {
-			return len(paths[i]) < len(paths[j])
-		})
-
 		for i := 0; i < numAnts; i++ {
 			if !antsReachedEnd[i] {
-				currentRoom := paths[i%numPaths][antPositions[i]]
-				nextRoom := paths[i%numPaths][antPositions[i]+1]
+				var currentPathIndex int
+				if i == numAnts-1 {
+					// La dernière fourmi prend toujours le chemin le plus court
+					currentPathIndex = shortestPathIndex
+				} else {
+					currentPathIndex = i % numPaths
+				}
+
+				currentPath := uniquePaths[currentPathIndex]
+				currentRoom := currentPath[antPositions[i]]
+				nextRoom := currentPath[antPositions[i]+1]
 				tunnel := currentRoom + "-" + nextRoom
 
 				// Vérifier si le tunnel est disponible
