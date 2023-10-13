@@ -7,11 +7,12 @@ import (
 
 func SendAntsOpti(roomsMap map[string]Room, startRoom, endRoom string, numAnts int) {
 	allpaths := FindAndPrintPaths(roomsMap, start, end)
-	uniquePaths := SelectPaths(allpaths)
+	uniquePaths := Filter(allpaths)
 	numPaths := len(uniquePaths)
 
+	// Trier les chemins par longueur croissante pour obtenir le plus court en premier
 	sort.Slice(uniquePaths, func(i, j int) bool {
-		return len(uniquePaths[i]) > len(uniquePaths[j]) // Triez à l'envers pour obtenir le plus court en dernier
+		return len(uniquePaths[i]) < len(uniquePaths[j])
 	})
 
 	if numPaths == 0 {
@@ -35,13 +36,32 @@ func SendAntsOpti(roomsMap map[string]Room, startRoom, endRoom string, numAnts i
 
 	tunnelOccupied := make(map[string]bool)
 
+	// Trouver l'index du chemin le plus court
+	shortestPathIndex := 0
+	shortestPathLength := len(uniquePaths[0])
+	for i := 1; i < numPaths; i++ {
+		if len(uniquePaths[i]) < shortestPathLength {
+			shortestPathIndex = i
+			shortestPathLength = len(uniquePaths[i])
+		}
+	}
+
 	for {
 		allReachedEnd := true
 
 		for i := 0; i < numAnts; i++ {
 			if !antsReachedEnd[i] {
-				currentRoom := uniquePaths[i%numPaths][antPositions[i]]
-				nextRoom := uniquePaths[i%numPaths][antPositions[i]+1]
+				var currentPathIndex int
+				if i == numAnts-1 {
+					// La dernière fourmi prend toujours le chemin le plus court
+					currentPathIndex = shortestPathIndex
+				} else {
+					currentPathIndex = i % numPaths
+				}
+
+				currentPath := uniquePaths[currentPathIndex]
+				currentRoom := currentPath[antPositions[i]]
+				nextRoom := currentPath[antPositions[i]+1]
 				tunnel := currentRoom + "-" + nextRoom
 
 				// Vérifier si le tunnel est disponible

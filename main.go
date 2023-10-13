@@ -64,6 +64,17 @@ func main() {
 		fmt.Println(chemin)
 	}
 
+	fmt.Println("====== AVEC TRIS OPTI ======")
+
+	// Appeler la fonction pour sélectionner les chemins
+	selectedPaths2 := mypackage.Filter(paths)
+
+	// Afficher les chemins sélectionnés
+	fmt.Println("Chemins sélectionnés :")
+	for _, chemin := range selectedPaths2 {
+		fmt.Println(chemin)
+	}
+
 	fmt.Println("====== SIMULATION ======")
 	// Vous pouvez appeler sendAnts avec les données appropriées
 	mypackage.SendAnts(roomsMap, start, end, ants)

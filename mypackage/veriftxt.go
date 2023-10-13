@@ -20,11 +20,11 @@ var (
 )
 
 func Checktxt() (string, string, string, []string, []string) {
-	if len(os.Args) == 2 { //verif si il y bien 2 arg donc main + l'example sinon message err
+	if len(os.Args) == 2 { // verif si il y bien 2 arg donc main + l'example sinon message err
 		fichier := os.Args[1]
 		file, err := os.Open(fichier)
 		if err != nil {
-			fmt.Println("cannot open the file !!")
+			fmt.Println("ERROR: cannot open the file !!")
 			os.Exit(3)
 		}
 		fileScanner := bufio.NewScanner(file)
@@ -36,14 +36,14 @@ func Checktxt() (string, string, string, []string, []string) {
 		file.Close()
 		intfirstline, err := strconv.Atoi(fileLines[0])
 		if err != nil {
-			fmt.Print("impossible de convertir la premiere ligne en int ")
+			fmt.Print("ERROR: impossible de convertir la premiere ligne en int ")
 			os.Exit(3)
 		}
 		if intfirstline > 0 {
 			stringfirstline := strconv.Itoa(intfirstline)
 			ant = stringfirstline
 		} else {
-			fmt.Println("le nombre de ants doit etre suprieur a 0 ")
+			fmt.Println("ERROR: le nombre de ants doit etre suprieur a 0 ")
 			os.Exit(3)
 		}
 		for i := 1; i < len(fileLines); i++ {
@@ -68,7 +68,7 @@ func Checktxt() (string, string, string, []string, []string) {
 						if partie1 != partie2 {
 							links = append(links, temp[0])
 						} else {
-							fmt.Println("2 links sont semblable !!! ")
+							fmt.Println("ERROR: 2 links sont semblable !!! ")
 							os.Exit(3)
 						}
 					}
