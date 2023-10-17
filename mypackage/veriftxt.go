@@ -46,14 +46,22 @@ func Checktxt() (string, string, string, []string, []string) {
 			fmt.Println("ERROR: le nombre de ants doit etre suprieur a 0 ")
 			os.Exit(3)
 		}
+
 		for i := 1; i < len(fileLines); i++ {
 			if fileLines[i-1] == "##start" {
 				tabl := strings.Split(fileLines[i], " ")
 				start = tabl[0]
+
 			}
 			if fileLines[i-1] == "##end" {
 				tab := strings.Split(fileLines[i], " ")
 				end = tab[0]
+
+			} else if strings.HasPrefix(fileLines[i-1], "##") {
+				if fileLines[i-1] != "##start" && fileLines[i-1] != "##end" {
+					fmt.Println("ERROR: Ligne inattendue commençant par ##")
+					os.Exit(3)
+				}
 			} else {
 				if strings.Contains(fileLines[i], "#") {
 				} else {
